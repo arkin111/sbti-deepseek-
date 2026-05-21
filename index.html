@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SBTI 人格测试 — 你是什么样的人才？</title>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: #0f0f1a;
+  color: #e8e8f0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ========== Background Animation ========== */
+.bg-stars {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(120,80,255,0.12) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(255,80,180,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 50% 80%, rgba(80,180,255,0.10) 0%, transparent 60%);
+}
+.bg-grid {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridMove 20s linear infinite;
+}
+#bg-particles {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+}
+@keyframes gridMove { to { background-position: 60px 60px; } }
+
+/* ========== Layout ========== */
+.container { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 0 20px; }
+
+/* ========== Header ========== */
+.header {
+  text-align: center; padding: 60px 0 40px;
+  animation: fadeInUp 0.8s ease;
+}
+.logo {
+  display: inline-block;
+  font-size: 64px; font-weight: 900; letter-spacing: 8px;
+  background: linear-gradient(135deg, #a78bfa, #f472b6, #60a5fa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 30px rgba(139,92,246,0.3));
+  animation: logoGlow 3s ease-in-out infinite;
+}
+@keyframes logoGlow {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(139,92,246,0.2)); }
+  50% { filter: drop-shadow(0 0 40px rgba(236,72,153,0.35)); }
+}
+.subtitle { font-size: 17px; color: #9090b0; letter-spacing: 2px; }
+.tagline { font-size: 14px; color: #606080; margin-top: 6px; }
+
+/* ========== Cards ========== */
+.card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+  padding: 40px 36px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  animation: fadeInUp 0.6s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04);
+  position: relative;
+  overflow: hidden;
+}
+.card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  pointer-events: none;
+}
+.card-title {
+  font-size: 22px; font-weight: 700; margin-bottom: 8px;
+  background: linear-gradient(135deg, #c084fc, #f472b6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.card-desc { color: #8080a0; font-size: 14px; margin-bottom: 28px; line-height: 1.8; }
+
+/* ========== Buttons ========== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 40px; border-radius: 50px; border: none; cursor: pointer;
+  font-size: 16px; font-weight: 700; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative; overflow: hidden; letter-spacing: 0.5px;
+}
+.btn::before {
+  content: ''; position: absolute; inset: 0; border-radius: 50px;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  color: #fff; box-shadow: 0 4px 24px rgba(124,58,237,0.35), 0 0 60px rgba(219,39,119,0.1);
+}
+.btn-primary::before {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(124,58,237,0.5), 0 0 80px rgba(219,39,119,0.2); }
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary:active { transform: translateY(-1px); }
+.btn-secondary {
+  background: rgba(255,255,255,0.04);
+  color: #b0b0d0; border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #e0e0f0; }
+.btn-block { width: 100%; }
+.btn-sm { padding: 10px 24px; font-size: 14px; }
+.btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+/* ========== Start Page ========== */
+.start-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 24px 0 32px; }
+.start-feature {
+  text-align: center; padding: 20px 12px;
+  background: rgba(255,255,255,0.03); border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.start-feature .icon { font-size: 32px; margin-bottom: 8px; }
+.start-feature .label { font-size: 13px; color: #9090b0; font-weight: 600; }
+
+/* ========== Quiz / Progress ========== */
+.progress-wrap { margin-bottom: 28px; }
+.progress-bar {
+  height: 6px; background: rgba(255,255,255,0.06);
+  border-radius: 10px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 10px;
+  background: linear-gradient(90deg, #7c3aed, #db2777);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(139,92,246,0.4);
+}
+.progress-text { text-align: right; font-size: 11px; color: #555575; margin-top: 8px; font-weight: 600; letter-spacing: 1px; }
+
+.question-counter { font-size: 12px; color: #8b5cf6; font-weight: 700; margin-bottom: 10px; letter-spacing: 3px; }
+.question-text { font-size: 21px; font-weight: 700; margin-bottom: 28px; line-height: 1.6; }
+
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+  width: 100%; text-align: left; padding: 18px 20px;
+  border-radius: 16px; border: 1.5px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color: #c0c0e0; font-size: 15px; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; align-items: center; gap: 14px;
+}
+.option:hover {
+  border-color: rgba(139,92,246,0.5);
+  background: rgba(139,92,246,0.08);
+  transform: translateX(4px);
+  box-shadow: 0 4px 20px rgba(139,92,246,0.1);
+}
+.option.selected {
+  border-color: #8b5cf6;
+  background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(236,72,153,0.1));
+  color: #fff;
+  box-shadow: 0 0 24px rgba(139,92,246,0.2), inset 0 1px 0 rgba(255,255,255,0.04);
+  transform: translateX(4px);
+}
+.option .opt-letter {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+.option.selected .opt-letter {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(139,92,246,0.4);
+}
+
+.nav-btns { display: flex; justify-content: space-between; margin-top: 24px; gap: 12px; }
+
+/* ========== Type Overview Grid ========== */
+.type-overview { margin-top: 32px; }
+.type-overview-title {
+  font-size: 20px; font-weight: 700; margin-bottom: 16px;
+  background: linear-gradient(135deg, #c084fc, #f472b6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.type-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.type-chip {
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 14px; padding: 14px 10px; text-align: center;
+  cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative; overflow: hidden;
+}
+.type-chip::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(236,72,153,0.04));
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.type-chip:hover {
+  border-color: rgba(139,92,246,0.5);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(139,92,246,0.15);
+}
+.type-chip:hover::before { opacity: 1; }
+.type-chip:active { transform: translateY(-2px); }
+.type-chip .tc-emoji { font-size: 28px; margin-bottom: 6px; position: relative; z-index: 1; }
+.type-chip .tc-code { font-size: 13px; font-weight: 800; letter-spacing: 2px; color: #a78bfa; position: relative; z-index: 1; }
+.type-chip .tc-name { font-size: 12px; color: #9090b0; margin-top: 2px; position: relative; z-index: 1; }
+.type-chip .tc-dims { font-size: 10px; color: #555575; margin-top: 2px; position: relative; z-index: 1; }
+
+/* Type detail modal/popover */
+.type-detail-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  animation: fadeIn 0.2s ease;
+  padding: 20px;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.type-detail-card {
+  background: linear-gradient(135deg, #15152a, #1a1535);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 24px; padding: 36px; max-width: 460px; width: 100%;
+  animation: fadeInUp 0.3s ease; position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(139,92,246,0.05);
+  max-height: 85vh; overflow-y: auto;
+}
+.type-detail-card .td-close {
+  position: absolute; top: 16px; right: 16px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); border: none; color: #9090b0;
+  cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
+}
+.type-detail-card .td-close:hover { background: rgba(255,255,255,0.14); color: #fff; }
+.type-detail-card .td-code {
+  font-size: 36px; font-weight: 900; letter-spacing: 4px;
+  background: linear-gradient(135deg, #c084fc, #f472b6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+.type-detail-card .td-name { font-size: 20px; font-weight: 700; }
+.type-detail-card .td-dims { font-size: 13px; color: #9090b0; margin: 4px 0 12px; }
+.type-detail-card .td-desc { font-size: 14px; color: #c0c0e0; line-height: 1.7; margin-bottom: 12px; }
+.type-detail-card .td-meta { font-size: 13px; color: #8080a0; line-height: 1.6; }
+.type-detail-card .td-meta strong { color: #a0a0c0; }
+
+/* Quiz auto-advance hint */
+.auto-hint {
+  text-align: center; margin-top: 16px; font-size: 12px; color: #505070;
+  opacity: 0; transition: opacity 0.4s ease;
+}
+.auto-hint.visible { opacity: 1; }
+
+/* ========== Results ========== */
+.result-header { text-align: center; margin-bottom: 32px; }
+.result-type {
+  font-size: 64px; font-weight: 900; letter-spacing: 8px;
+  background: linear-gradient(135deg, #a78bfa, #f472b6, #60a5fa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 30px rgba(139,92,246,0.35));
+  animation: logoGlow 3s ease-in-out infinite;
+}
+.result-name { font-size: 24px; font-weight: 700; }
+.result-subtitle { font-size: 15px; color: #8080a0; margin-top: 6px; }
+
+.result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+.result-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px; padding: 22px;
+  transition: all 0.3s ease;
+}
+.result-card:hover {
+  background: rgba(255,255,255,0.05);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.result-card h4 { font-size: 12px; color: #9090b0; margin-bottom: 10px; letter-spacing: 2px; text-transform: uppercase; }
+.result-card p { font-size: 14px; color: #c0c0e0; line-height: 1.7; }
+
+.dimension-bars { margin-bottom: 28px; }
+.dim-bar { margin-bottom: 16px; }
+.dim-bar .dim-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+.dim-bar .dim-label { color: #8080a0; font-weight: 600; }
+.dim-bar .dim-value { color: #c0c0e0; font-weight: 600; font-size: 13px; }
+.dim-bar .dim-track { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; position: relative; }
+.dim-bar .dim-fill {
+  height: 100%; border-radius: 10px; position: absolute;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 12px currentColor;
+}
+.dim-fill.s-dim { background: linear-gradient(90deg, #60a5fa, #a78bfa); color: #a78bfa; }
+.dim-fill.b-dim { background: linear-gradient(90deg, #f59e0b, #ef4444); color: #f59e0b; }
+.dim-fill.t-dim { background: linear-gradient(90deg, #10b981, #06b6d4); color: #10b981; }
+.dim-fill.i-dim { background: linear-gradient(90deg, #ec4899, #8b5cf6); color: #ec4899; }
+
+.share-section { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.share-card-preview {
+  background: linear-gradient(135deg, #13132a, #1a1040);
+  border-radius: 24px; padding: 36px; text-align: center;
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative; overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+.share-card-preview::before {
+  content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(139,92,246,0.08), transparent, rgba(236,72,153,0.08), transparent);
+  animation: rotate 10s linear infinite;
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+/* ========== Animations ========== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeInUp 0.5s ease forwards; }
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+
+/* ========== Page sections ========== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ========== Footer ========== */
+.footer { text-align: center; padding: 40px 20px; color: #404060; font-size: 12px; }
+.footer a { color: #606080; text-decoration: none; }
+.footer a:hover { color: #9090b0; }
+
+/* ========== Mobile ========== */
+@media (max-width: 600px) {
+  .header { padding: 40px 0 28px; }
+  .logo { font-size: 40px; letter-spacing: 4px; }
+  .card { padding: 24px 20px; border-radius: 16px; }
+  .start-features { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .start-feature { padding: 14px 8px; }
+  .start-feature .icon { font-size: 24px; }
+  .start-feature .label { font-size: 11px; }
+  .result-grid { grid-template-columns: 1fr; }
+  .result-type { font-size: 44px; letter-spacing: 4px; }
+  .question-text { font-size: 17px; }
+  .share-section { flex-direction: column; }
+  .type-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .type-chip { padding: 10px 6px; }
+  .type-chip .tc-emoji { font-size: 20px; }
+  .type-chip .tc-code { font-size: 11px; letter-spacing: 1px; }
+  .type-chip .tc-name { font-size: 11px; }
+  .type-chip .tc-dims { font-size: 9px; }
+  .type-detail-card { padding: 24px 20px; margin: 12px; max-height: 80vh; }
+  .type-detail-card .td-code { font-size: 28px; }
+  .logo { font-size: 42px; letter-spacing: 4px; }
+  .result-type { font-size: 42px; letter-spacing: 4px; }
+}
+
+/* ========== Toast ========== */
+.toast {
+  position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+  background: rgba(30,20,50,0.95); color: #fff; padding: 14px 32px;
+  border-radius: 50px; font-size: 14px; font-weight: 600;
+  z-index: 200; animation: toastIn 0.4s ease, toastOut 0.4s ease 1.8s forwards;
+  pointer-events: none;
+  border: 1px solid rgba(139,92,246,0.3);
+  box-shadow: 0 8px 32px rgba(139,92,246,0.25);
+  backdrop-filter: blur(12px);
+}
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(16px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div class="bg-stars"></div>
+<div class="bg-grid"></div>
+<canvas id="bg-particles"></canvas>
+
+<div class="container">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">SBTI</div>
+    <div class="subtitle">人才类型指标</div>
+    <div class="tagline">—— 测测你到底是什么样的人才 ——</div>
+  </header>
+
+  <!-- ====== START PAGE ====== -->
+  <div class="page active" id="page-start">
+    <div class="card fade-in">
+      <div class="card-title">🧬 什么是 SBTI？</div>
+      <div class="card-desc">
+        SBTI（Shǎ Bī Type Indicator）是全球首个基于"社交·摆烂·躺平·i/e"四维模型的人才评估体系。<br>
+        由民间科学家历经三天三夜精心研发，准确率高达 99.9999%（不保证）。
+      </div>
+      <div class="start-features">
+        <div class="start-feature"><div class="icon">🎭</div><div class="label">4大维度</div></div>
+        <div class="start-feature"><div class="icon">🧩</div><div class="label">16种人格</div></div>
+        <div class="start-feature"><div class="icon">⚡</div><div class="label">仅需3分钟</div></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="startQuiz()">
+        开始测试 🚀
+      </button>
+      <p style="text-align:center;margin-top:14px;font-size:12px;color:#606080;">
+        ※ 本测试纯属娱乐，如有雷同纯属巧合
+      </p>
+    </div>
+
+    <!-- Type overview on start page -->
+    <div class="type-overview fade-in">
+      <div class="type-overview-title">📖 16种人格图鉴</div>
+      <div class="type-grid" id="type-grid-start"></div>
+    </div>
+  </div>
+
+  <!-- ====== QUIZ PAGE ====== -->
+  <div class="page" id="page-quiz">
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <div class="progress-text" id="progress-text">0 / 15</div>
+      </div>
+      <div class="question-counter" id="q-counter">QUESTION 1</div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <div class="nav-btns">
+        <button class="btn btn-secondary btn-sm" id="btn-prev" onclick="prevQuestion()" style="visibility:hidden;">← 上一题</button>
+        <button class="btn btn-primary btn-sm" id="btn-next" onclick="nextQuestion()" disabled>下一题 →</button>
+      </div>
+      <div class="auto-hint" id="auto-hint">选择后自动跳转，也可点按钮手动跳转</div>
+    </div>
+  </div>
+
+  <!-- Type detail overlay -->
+  <div id="type-detail-overlay" class="type-detail-overlay" style="display:none;" onclick="if(event.target===this)closeTypeDetail()">
+    <div class="type-detail-card" id="type-detail-card"></div>
+  </div>
+
+  <!-- ====== RESULT PAGE ====== -->
+  <div class="page" id="page-result">
+    <div class="card fade-in">
+      <div class="result-header">
+        <div class="result-type" id="res-type"></div>
+        <div class="result-name" id="res-name"></div>
+        <div class="result-subtitle" id="res-subtitle"></div>
+      </div>
+
+      <div class="dimension-bars" id="dim-bars"></div>
+
+      <div class="result-grid">
+        <div class="result-card fade-in delay-1">
+          <h4>💪 你的优势</h4>
+          <p id="res-strengths"></p>
+        </div>
+        <div class="result-card fade-in delay-2">
+          <h4>🤔 你的弱点</h4>
+          <p id="res-weaknesses"></p>
+        </div>
+        <div class="result-card fade-in delay-1">
+          <h4>💼 适合岗位</h4>
+          <p id="res-careers"></p>
+        </div>
+        <div class="result-card fade-in delay-2">
+          <h4>💘 最佳搭档</h4>
+          <p id="res-match"></p>
+        </div>
+      </div>
+
+      <div class="share-card-preview" id="share-card">
+        <div style="font-size:48px;font-weight:900;letter-spacing:6px;background:linear-gradient(135deg,#c084fc,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;" id="share-type"></div>
+        <div style="font-size:20px;font-weight:700;margin:8px 0;" id="share-name"></div>
+        <div style="font-size:13px;color:#9090b0;" id="share-desc"></div>
+      </div>
+
+      <div class="share-section">
+        <button class="btn btn-primary" onclick="shareResult()">📋 复制结果卡片</button>
+        <button class="btn btn-secondary" onclick="restartQuiz()">🔄 重新测试</button>
+      </div>
+    </div>
+
+    <!-- Type overview on result page -->
+    <div class="type-overview fade-in" style="margin-top:32px;">
+      <div class="type-overview-title">📖 看看其他人格</div>
+      <div class="type-grid" id="type-grid-result"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    SBTI 人格测试 © 2026 · 纯属娱乐 · 请勿当真<br>
+    如有雷同纯属巧合 · <a href="#" onclick="restartQuiz()">再测一次</a>
+  </footer>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+// ==================== DATA ====================
+
+const questions = [
+  {
+    text: "周末收到同事聚会邀请，你的第一反应是？",
+    options: [
+      { text: "假装没看到消息，三天后回复「啊刚看到」", dim: "S", score: -2 },
+      { text: "内心挣扎三小时，最后说「下次一定」", dim: "S", score: -1 },
+      { text: "去就去呗，反正闲着也是闲着", dim: "S", score: 1 },
+      { text: "秒回「几点在哪吃什么」并主动拉群", dim: "S", score: 2 }
+    ]
+  },
+  {
+    text: "老板说「这个需求很简单」，你会？",
+    options: [
+      { text: "脸上笑嘻嘻，心里开始刷招聘APP", dim: "B", score: -2 },
+      { text: "「好的老板」然后打开淘宝摸鱼到下班", dim: "B", score: -1 },
+      { text: "详细追问需求细节，默默加班做完", dim: "B", score: 1 },
+      { text: "连夜赶出三个方案，PPT都配好了", dim: "B", score: 2 }
+    ]
+  },
+  {
+    text: "面对人生重大选择时，你的态度是？",
+    options: [
+      { text: "躺平就行，命运自有安排", dim: "T", score: -2 },
+      { text: "先躺一会儿，不行再说", dim: "T", score: -1 },
+      { text: "认真规划，但给自己留后路", dim: "T", score: 1 },
+      { text: "冲就完了！不折腾不舒服", dim: "T", score: 2 }
+    ]
+  },
+  {
+    text: "一个人在咖啡厅，旁边有人开始大声讲电话，你会？",
+    options: [
+      { text: "内心疯狂吐槽但表面毫无波澜", dim: "I", score: -2 },
+      { text: "默默戴上耳机，调大音量", dim: "I", score: -1 },
+      { text: "直接过去礼貌提醒对方", dim: "I", score: 1 },
+      { text: "加入对方的话题，顺便交个朋友", dim: "I", score: 2 }
+    ]
+  },
+  {
+    text: "朋友圈看到有人炫耀自己的成就，你的反应？",
+    options: [
+      { text: "划走，不看不评论不点赞", dim: "S", score: -2 },
+      { text: "默默截图发给闺蜜/兄弟吐槽", dim: "S", score: -1 },
+      { text: "礼貌点赞，然后发一条更凡尔赛的", dim: "S", score: 1 },
+      { text: "评论「太牛了！」然后约出来取经", dim: "S", score: 2 }
+    ]
+  },
+  {
+    text: "周五下午五点，你手头还有没干完的活，你会？",
+    options: [
+      { text: "直接下班，下周再说", dim: "B", score: -2 },
+      { text: "摸鱼到六点打卡走人", dim: "B", score: -1 },
+      { text: "做完再走，不留尾巴", dim: "B", score: 1 },
+      { text: "做完之后顺便把下周的活也干了", dim: "B", score: 2 }
+    ]
+  },
+  {
+    text: "看到身边有人转行/创业/考研成功，你的想法？",
+    options: [
+      { text: "他们卷他们的，我躺我的", dim: "T", score: -2 },
+      { text: "心潮澎湃三分钟，然后继续刷手机", dim: "T", score: -1 },
+      { text: "默默给自己报了个课程（学不学另说）", dim: "T", score: 1 },
+      { text: "立刻开始研究自己怎么也能搞一个", dim: "T", score: 2 }
+    ]
+  },
+  {
+    text: "在电梯里遇到不太熟的同事，你会？",
+    options: [
+      { text: "低头假装看手机直到楼层到了", dim: "I", score: -2 },
+      { text: "点头微笑然后迅速移开目光", dim: "I", score: -1 },
+      { text: "寒暄几句天气/工作", dim: "I", score: 1 },
+      { text: "从电梯聊到出公司大门还意犹未尽", dim: "I", score: 2 }
+    ]
+  },
+  {
+    text: "朋友约你出去玩，但你没有洗头，你会？",
+    options: [
+      { text: "「今天不舒服，下次一定」", dim: "S", score: -2 },
+      { text: "纠结半小时后才回复", dim: "S", score: -1 },
+      { text: "戴个帽子就出门", dim: "S", score: 1 },
+      { text: "洗不洗头无所谓，先冲出门再说", dim: "S", score: 2 }
+    ]
+  },
+  {
+    text: "开会时领导问「大家有什么想法？」，你会？",
+    options: [
+      { text: "低头看桌面，仿佛桌面上有彩票中奖号码", dim: "B", score: -2 },
+      { text: "等别人先说，自己最后附和两句", dim: "B", score: -1 },
+      { text: "举手发言，把准备好的想法说出来", dim: "B", score: 1 },
+      { text: "第一个举手，说完还积极补充别人的观点", dim: "B", score: 2 }
+    ]
+  },
+  {
+    text: "双十一/618到了，你的购物策略是？",
+    options: [
+      { text: "什么都不买，省下100%", dim: "T", score: -2 },
+      { text: "随便看看，只买必需品", dim: "T", score: -1 },
+      { text: "提前一周列好清单，精准下单", dim: "T", score: 1 },
+      { text: "提前一个月做攻略，算满减凑单到凌晨", dim: "T", score: 2 }
+    ]
+  },
+  {
+    text: "团建时被要求表演节目，你会？",
+    options: [
+      { text: "当场社死，想原地消失", dim: "I", score: -2 },
+      { text: "硬着头皮唱两句，声音都在抖", dim: "I", score: -1 },
+      { text: "大方来一段，反正大家都认识", dim: "I", score: 1 },
+      { text: "主动请缨，把全场气氛搞起来", dim: "I", score: 2 }
+    ]
+  },
+  {
+    text: "手机收到陌生号码来电，你会？",
+    options: [
+      { text: "不接，让它自己挂断", dim: "S", score: -2 },
+      { text: "接了但不出声，等对方先说话", dim: "S", score: -1 },
+      { text: "正常接听，礼貌应对", dim: "S", score: 1 },
+      { text: "接了就聊，说不定是新机会", dim: "S", score: 2 }
+    ]
+  },
+  {
+    text: "你的年度目标完成情况通常是？",
+    options: [
+      { text: "连年度目标都没定过", dim: "B", score: -2 },
+      { text: "定了但……目标是什么来着？", dim: "B", score: -1 },
+      { text: "完成了七八成吧", dim: "B", score: 1 },
+      { text: "超额完成，已经在做明年的了", dim: "B", score: 2 }
+    ]
+  },
+  {
+    text: "遇到困难/挫折时，你的第一反应是？",
+    options: [
+      { text: "放弃，换个方向躺", dim: "T", score: -2 },
+      { text: "先emo一天，明天再说", dim: "T", score: -1 },
+      { text: "分析问题，寻求解决方案", dim: "T", score: 1 },
+      { text: "越挫越勇，问题越大干劲越足", dim: "T", score: 2 }
+    ]
+  }
+];
+
+const personalityTypes = {
+  KBTI: { name: "赛博隐士", emoji: "👻", desc: "数字时代的电子幽灵。群消息免打扰永久开启，朋友圈入口已关闭三百年。你的存在感低到大数据都给你打上了「不活跃用户」标签。人生哲学：「只要我不在，就没有人发现我不在。」",
+    strengths: "精神世界自给自足，不需要外部供能。独处能力MAX，一个手机一张床就是一个宇宙。",
+    weaknesses: "被世界遗忘的速度比你回消息还快。外卖快递是你与人类文明唯一的物理接触。",
+    careers: "暗网管理员、深夜便利店守夜人、深山民宿老板、元宇宙原住民。",
+    match: "NJPE「人类终极形态」——需要一台永动机把你从被窝里拽出来。" },
+  KBTE: { name: "颅内社交家", emoji: "🎭", desc: "在脑子里已经把天聊完了，现实中说了一句「你好」就耗尽了今日社交配额。每次出门前颅内排练两小时，出门后三分钟想回家。朋友圈编辑了又删，删了又编辑，最后设为仅自己可见。",
+    strengths: "共情能力溢出，内心戏丰富到可以拍80集连续剧。被动社交时出人意料地讨喜。",
+    weaknesses: "精神内耗届的GOAT，一场社交活动后需要三天闭关回血。容易陷入「我刚才那句话是不是说错了」的深夜复盘循环。",
+    careers: "弹幕评论家、深夜电台主播、匿名论坛意见领袖、AI聊天机器人训练师。",
+    match: "NJPI「孤勇者（成人版）」——你仰望TA的洒脱，TA心疼你的细腻。" },
+  KBPI: { name: "暗夜刺客", emoji: "🥷", desc: "白天：摸鱼摆烂，「这辈子就这样了」。凌晨三点：台灯一亮，直接变身卷王形态。你的信条是「说好一起挂科，你却偷偷及了格」——但你是那种及格了还要说「运气好而已」的人。",
+    strengths: "低调且致命，在不引起任何人警觉的情况下偷偷进化。是考试出分后大家最意外的那个人。",
+    weaknesses: "过于独狼，遇到困难宁愿通宵也不开口求助。一旦崩溃无人知晓，属于高危人群。",
+    careers: "独立开发者、网课终身会员、深夜学习区UP主、远程办公的神。",
+    match: "NJTE「行走闪光弹」——TA帮你把成果昭告天下，你帮TA沉淀真正的实力。" },
+  KBPE: { name: "薛定谔的人类", emoji: "🐱", desc: "同时处于社恐与社牛、躺平与拼搏的量子叠加态。你永远不知道自己下一秒是冲还是缩。朋友锐评：「你这人怎么一会儿e一会儿i的，我看你不是SBTI，你是CPU。」",
+    strengths: "可盐可甜可卷可躺，什么局都能活，什么坑都能爬。究极适应力，打不死的小强精神。",
+    weaknesses: "选择困难症晚期，决定中午吃什么比决定跳槽还难。常常在纠结中把时间耗光，然后什么都没干。",
+    careers: "产品经理（纠结是职业素养）、自由职业者（自己跟自己开会）、斜杠青年（斜杠太多记不住）。",
+    match: "NBTI「社交悍匪」——TA的松弛感是你焦虑发作时的人间解药。" },
+  KJTI: { name: "意念卷王", emoji: "🐹", desc: "收藏夹里躺着800个「自律逆袭」视频，网盘里存着2TB的学习资料，To-do List写得比毕业论文还长。实际执行：刷了四个小时手机，然后安慰自己「明天开始」。你是「收藏从未停止，行动从未开始」的活体广告。",
+    strengths: "危机意识满分，永远精准感知到别人在偷偷努力。信息检索能力极强（指找资源的能力）。",
+    weaknesses: "执行力约等于零，是思想上的巨人、行动上的霍比特人。每年1月1日是年度计划高峰期，1月2日开始衰减。",
+    careers: "知识付费核心用户、PPT美化工程师、年度计划设计师、战略规划顾问（只规划不执行）。",
+    match: "NBPE「六边形社畜」——你的脑子加上TA的手脚，理论上能统治世界。" },
+  KJTE: { name: "奥斯卡影帝", emoji: "🎬", desc: "上班如上坟，但朋友圈里你是正能量战神。会议室里频频点头做笔记，实际上在画小人。老板眼中「态度端正」，同事眼中「认真负责」，只有你的枕头知道你每晚回家后有多瘫。",
+    strengths: "演技精湛，能在任何场合维持「靠谱人设」。表面功夫做到极致也是一种能力。",
+    weaknesses: "活得太累了，每天都在演一个更努力的自己。深夜emo频率居高不下，周末基本用来回血。",
+    careers: "大厂螺丝钉、公务员（铁饭碗版）、任何需要「看起来在干活」的岗位、职业体验派演员。",
+    match: "KBPI「暗夜刺客」——你们俩一起偷偷卷，一起假装没卷，完美默契。" },
+  KJPI: { name: "孤狼战术后仰", emoji: "🐺", desc: "不合群但超级能打，一个人的产能顶一个外包团队。团建？不去。聚餐？没空。但交付质量让所有人闭嘴。你在工位上戴着耳机，仿佛与世隔绝，但代码/方案/业绩是全场最佳。",
+    strengths: "专注力MAX，深度工作能力拉满。不需要社交充能，一个人就是一支军队。",
+    weaknesses: "协作能力欠费，容易把自己累到崩溃也不知道求救。偶尔抬头发现同事都不认识你。",
+    careers: "独立开发者、自由设计师、独立咨询师、任何「别跟我说话让我干活」的岗位。",
+    match: "NBTE「人类喇叭」——你产出价值，TA帮你传播价值，天作之合。" },
+  KJPE: { name: "痛苦面具", emoji: "😫", desc: "明明社恐到看到熟人想绕路，但为了KPI硬着头皮social。每次公开演讲前手心冒汗、心跳加速，讲完之后大家说「你好自然啊」。你不是不害怕，你是害怕但更怕输。",
+    strengths: "意志力惊人，能为了目标硬刚一切不适。综合战斗力极强，是那种「不行也得行」的狠人。",
+    weaknesses: "burnout风险极高，你不是不累，你是不允许自己累。建议每季度强制休假一次（虽然你不会听）。",
+    careers: "创业者（受苦受难版）、项目负责人、任何需要「硬着头皮上」的高压岗位。",
+    match: "NBTI「社交悍匪」——TA是天生的社交选手，看完TA你会怀疑自己为什么要这么拼。" },
+  NBTI: { name: "社交悍匪", emoji: "🦝", desc: "聚会上气氛组首席担当，段子手+话题发动机。但散场后回到家，你的i人内核开始运转：「我是不是说太多了」「那个人好像被我冷落了」「下次还是别去了」。充电方式是：社交完独自发呆三天。",
+    strengths: "社交技能点满但懂得收敛，能疯能静，是最受欢迎的聚会嘉宾——因为你知道什么时候该走。",
+    weaknesses: "社交耗能呈指数级，常在热情输出后突然消失，被朋友戏称「人间蒸发式社交」。",
+    careers: "活动策划、社群运营、脱口秀演员（业余）、需要社交但不许多说话的工作。",
+    match: "KJPE「痛苦面具」——你的从容是TA的止痛药，TA的专注让你肃然起敬。" },
+  NBTE: { name: "人类喇叭", emoji: "📢", desc: "走到哪聊到哪，陌生人只是「还没来得及认识的朋友」。微信通讯录5000人，但真正能借到钱的只有5个。你的嘴从早到晚就没停过，但说到正事时——「啊那个明天再说」。",
+    strengths: "社交恐怖分子，任何场合三分钟破冰。人脉广到离谱，消息灵通程度堪比情报局。",
+    weaknesses: "话说太多以至于经常忘记自己说了什么。承诺张口就来，兑现率接近彩票中奖率。躺平的时候比谁都彻底。",
+    careers: "销售冠军、婚礼司仪、直播带货、任何需要「脸皮厚度>10cm」的职业。",
+    match: "KJPI「孤狼战术后仰」——你负责画饼，TA负责烙饼，绝配。" },
+  NBPI: { name: "时间刺客", emoji: "⚡", desc: "一边摸鱼一边把事情干了，你以为TA在刷手机，其实TA已经把活干完了。效率高到让人怀疑TA一天有48小时。口头禅：「啊这个很简单啊」——然后你发现TA用了你不知道的十个快捷键。",
+    strengths: "效率怪兽，工作生活两不误。团队里的隐藏大腿，常被问「你是怎么做到的」。",
+    weaknesses: "太高效导致别人觉得你工作不饱和，然后被塞更多活。容易被当成免费生产力无限压榨。",
+    careers: "全栈工程师（真的全栈）、效率工具博主、任何需要「又快又好还不加班」的岗位。",
+    match: "KJTE「奥斯卡影帝」——一个真卷一个假卷，完美互补，互不拆穿。" },
+  NBPE: { name: "六边形社畜", emoji: "🌟", desc: "啥都能干，啥都干了，工资还是那点。你是老板的梦中情员，HR的招聘天花板，同事的救命稻草。唯一的缺点是——你不会拒绝，所以活全是你干。",
+    strengths: "技能树全点亮，从Excel到演讲到修打印机无所不能。朋友圈公认的「万能工具人」。",
+    weaknesses: "什么都会，什么都不精（但够用）。最大的弱点是不懂得把「不」字说出口，最后累成狗。",
+    careers: "初创公司联合创始人（什么都得干版）、全能助理、任何需要「这个人什么都能做」的岗位。",
+    match: "KJTI「意念卷王」——你负责执行，TA负责提供无限的理论支持。" },
+  NJTI: { name: "凡尔赛の王", emoji: "🎩", desc: "考了年级第一说是「裸考」，加班到凌晨说是「随便弄弄」。你明明卷得要死，但一定要让别人觉得你毫不费力。人生信条：「我可以赢，但不能让别人知道我努力过。」",
+    strengths: "人前光鲜人后努力，是那种「看起来毫不费力」的别人家孩子。社交和实力兼具。",
+    weaknesses: "太装了你！适当承认自己努力不会死。因为从不暴露努力过程，导致没人知道你有多拼。",
+    careers: "管理咨询顾问、战略分析师、任何需要在人前保持「优雅从容」的精英岗位。",
+    match: "KBPE「薛定谔的人类」——你的从容是TA最羡慕的东西（虽然你装得很累）。" },
+  NJTE: { name: "行走闪光弹", emoji: "💎", desc: "走到哪里都自带BGM和追光灯。同学聚会的焦点，朋友圈的顶流，亲戚口中「别人家的孩子」。但聚光灯熄灭后你瘫在床上想：「下辈子当个KBTI吧，好累。」",
+    strengths: "人脉+能力双重Buff，事业上升速度堪比火箭。是那个「让人又羡慕又嫉妒但就是恨不起来」的存在。",
+    weaknesses: "太耀眼了，偶尔会刺痛别人。你在人群中央的时候，没注意到角落里有人在翻白眼。",
+    careers: "CXO预备役、KOL/KOC、任何需要「能打又能秀」的岗位。",
+    match: "KBPI「暗夜刺客」——TA的低调内敛是你的镇静剂，你的光芒是TA的指路灯。" },
+  NJPI: { name: "孤勇者（成人版）", emoji: "🗡️", desc: "爱你孤身走暗巷，爱你不跪的模样，爱你对峙过绝望，不肯哭一场——但你真的很累。你可以在人群中闪闪发光，也能一个人扛到天亮。你的字典里没有「认输」两个字，但偶尔有「好累」两个字。",
+    strengths: "战斗力天花板，社交和实干都能打。是那种「说干就干，干了就能成」的人，绝境翻盘专业户。",
+    weaknesses: "太要强了，示弱在你看来是犯罪。压力大到爆炸时表面还在微笑，属于最需要被关心的那种人但看起来最不需要。",
+    careers: "连续创业者、独立律师、特种兵（比喻）、任何需要个人英雄主义的岗位。",
+    match: "KBTE「颅内社交家」——TA能让你卸下盔甲，做回三秒钟的脆弱人类。" },
+  NJPE: { name: "人类终极形态", emoji: "🏆", desc: "你是SBTI体系中的传说级存在，进化链的最顶端。社交、内卷、拼搏、外向——四项全能，六边形战士的终极版。但说实话，你真的不累吗？你的系统日志里全是「warning: CPU温度过高」。",
+    strengths: "不存在明显的短板，什么都能干成。是人类进化的最终答案，老板眼中的「这是一个人？」。",
+    weaknesses: "唯一的Bug是可能随时过载宕机。建议定期强制关机休息，虽然你的出厂设置里没有「休息」这个选项。",
+    careers: "任何你想干的事，世界是你的游乐场。建议顺便拯救一下地球。",
+    match: "KBTI「赛博隐士」——所有人都仰望你，但只有TA敢说「你先歇会儿吧」。你需要一个能让你降频的人。" }
+};
+
+// ==================== STATE ====================
+
+let currentQuestion = 0;
+let scores = { S: 0, B: 0, T: 0, I: 0 };
+let selectedAnswers = new Array(questions.length).fill(null);
+
+// ==================== PAGE SWITCHING ====================
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+}
+
+// ==================== QUIZ ====================
+
+function startQuiz() {
+  currentQuestion = 0;
+  scores = { S: 0, B: 0, T: 0, I: 0 };
+  selectedAnswers = new Array(questions.length).fill(null);
+  showPage('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  document.getElementById('q-counter').textContent = 'QUESTION ' + (currentQuestion + 1);
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('progress-text').textContent = (currentQuestion + 1) + ' / ' + questions.length;
+  document.getElementById('progress-fill').style.width = ((currentQuestion + 1) / questions.length * 100) + '%';
+  document.getElementById('auto-hint').classList.remove('visible');
+
+  const optsContainer = document.getElementById('q-options');
+  const letters = ['A', 'B', 'C', 'D'];
+  optsContainer.innerHTML = q.options.map((opt, i) => `
+    <button class="option${selectedAnswers[currentQuestion] === i ? ' selected' : ''}" onclick="selectOption(${i})">
+      <span class="opt-letter">${letters[i]}</span>
+      <span>${opt.text}</span>
+    </button>
+  `).join('');
+
+  // Nav buttons
+  document.getElementById('btn-prev').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = currentQuestion === questions.length - 1 ? '查看结果 🎉' : '下一题 →';
+  nextBtn.disabled = selectedAnswers[currentQuestion] === null;
+}
+
+let autoAdvanceTimer = null;
+
+function selectOption(index) {
+  selectedAnswers[currentQuestion] = index;
+  document.getElementById('btn-next').disabled = false;
+  // Update visual
+  document.querySelectorAll('.option').forEach((el, i) => {
+    el.classList.toggle('selected', i === index);
+  });
+  // Show hint
+  document.getElementById('auto-hint').classList.add('visible');
+  // Auto-advance after short delay
+  clearTimeout(autoAdvanceTimer);
+  autoAdvanceTimer = setTimeout(() => {
+    nextQuestion();
+  }, 500);
+}
+
+function prevQuestion() {
+  if (currentQuestion > 0) {
+    clearTimeout(autoAdvanceTimer);
+    // Undo the score from current question
+    const prevIdx = selectedAnswers[currentQuestion];
+    if (prevIdx !== null) {
+      const dim = questions[currentQuestion].options[prevIdx].dim;
+      scores[dim] -= questions[currentQuestion].options[prevIdx].score;
+    }
+    currentQuestion--;
+    renderQuestion();
+  }
+}
+
+function nextQuestion() {
+  if (selectedAnswers[currentQuestion] === null) return;
+
+  // Record score
+  const idx = selectedAnswers[currentQuestion];
+  const opt = questions[currentQuestion].options[idx];
+  scores[opt.dim] += opt.score;
+
+  if (currentQuestion < questions.length - 1) {
+    currentQuestion++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+// ==================== RESULT ====================
+
+function showResult() {
+  // Determine type
+  const sVal = scores.S > 0 ? 'N' : 'K';  // N=社牛, K=社恐
+  const bVal = scores.B > 0 ? 'J' : 'B';  // J=内卷, B=摆烂
+  const tVal = scores.T > 0 ? 'P' : 'T';  // P=拼搏, T=躺平
+  const iVal = scores.I > 0 ? 'E' : 'I';  // E=e人, I=i人
+  const typeCode = sVal + bVal + tVal + iVal;
+
+  const type = personalityTypes[typeCode];
+  if (!type) return;
+
+  showPage('result');
+
+  // Fill result
+  document.getElementById('res-type').textContent = typeCode;
+  document.getElementById('res-name').textContent = type.emoji + ' ' + type.name;
+  document.getElementById('res-subtitle').textContent = type.desc;
+  document.getElementById('res-strengths').textContent = type.strengths;
+  document.getElementById('res-weaknesses').textContent = type.weaknesses;
+  document.getElementById('res-careers').textContent = type.careers;
+  document.getElementById('res-match').textContent = type.match;
+
+  // Share card
+  document.getElementById('share-type').textContent = typeCode;
+  document.getElementById('share-name').textContent = type.emoji + ' ' + type.name;
+  document.getElementById('share-desc').textContent = type.desc.substring(0, 60) + '...';
+
+  // Dimension bars
+  const dims = [
+    { key: 'S', label: '社交模式', left: '社恐 😰', right: '社牛 😎', val: scores.S, cls: 's-dim' },
+    { key: 'B', label: '行为模式', left: '摆烂 🦥', right: '内卷 🏃', val: scores.B, cls: 'b-dim' },
+    { key: 'T', label: '生活态度', left: '躺平 🛌', right: '拼搏 💪', val: scores.T, cls: 't-dim' },
+    { key: 'I', label: '能量来源', left: 'i人 🔋', right: 'e人 ⚡', val: scores.I, cls: 'i-dim' },
+  ];
+
+  document.getElementById('dim-bars').innerHTML = dims.map(d => {
+    // Map score (-30 to +30 range approx) to percentage (0-100)
+    const maxScore = 30;
+    const pct = Math.round(((d.val + maxScore) / (maxScore * 2)) * 100);
+    const clampPct = Math.max(5, Math.min(95, pct));
+    return `
+      <div class="dim-bar">
+        <div class="dim-header">
+          <span class="dim-label">${d.label}</span>
+          <span class="dim-value">${d.val > 0 ? d.right : d.left}</span>
+        </div>
+        <div class="dim-track">
+          <div class="dim-fill ${d.cls}" style="width:${clampPct}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Render type grid on result page
+  renderTypeGrid('type-grid-result');
+}
+
+function shareResult() {
+  const typeCode = document.getElementById('res-type').textContent;
+  const type = personalityTypes[typeCode];
+  if (!type) return;
+
+  const shareText = `【SBTI 人格测试结果】\n\n🏷️ 类型：${typeCode} ${type.emoji} ${type.name}\n\n📝 ${type.desc}\n\n💪 优势：${type.strengths}\n\n🤔 弱点：${type.weaknesses}\n\n💼 适合岗位：${type.careers}\n\n💘 最佳搭档：${type.match}\n\n—— 你也来测测？`;
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(shareText).then(() => showToast('✅ 已复制结果卡片！快去发给朋友吧'));
+  } else {
+    showToast('📋 请手动长按复制上方卡片内容');
+  }
+}
+
+function restartQuiz() {
+  showPage('start');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ==================== TYPE GRID ====================
+
+const dimLabels = {
+  K: '社恐', N: '社牛', B: '摆烂', J: '内卷', T: '躺平', P: '拼搏', I: 'i人', E: 'e人'
+};
+
+function renderTypeGrid(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = Object.entries(personalityTypes).map(([code, t]) => {
+    const dims = code.split('').map(c => dimLabels[c]).join('·');
+    return `
+      <div class="type-chip" onclick="openTypeDetail('${code}')">
+        <div class="tc-emoji">${t.emoji}</div>
+        <div class="tc-code">${code}</div>
+        <div class="tc-name">${t.name}</div>
+        <div class="tc-dims">${dims}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openTypeDetail(code) {
+  const t = personalityTypes[code];
+  if (!t) return;
+  const dims = code.split('').map(c => dimLabels[c]).join('·');
+  document.getElementById('type-detail-card').innerHTML = `
+    <button class="td-close" onclick="closeTypeDetail()">✕</button>
+    <div class="td-code">${code}</div>
+    <div class="td-name">${t.emoji} ${t.name}</div>
+    <div class="td-dims">${dims}</div>
+    <div class="td-desc">${t.desc}</div>
+    <div class="td-meta">
+      <strong>💪 优势：</strong>${t.strengths}<br><br>
+      <strong>🤔 弱点：</strong>${t.weaknesses}<br><br>
+      <strong>💼 适合岗位：</strong>${t.careers}<br><br>
+      <strong>💘 最佳搭档：</strong>${t.match}
+    </div>
+  `;
+  document.getElementById('type-detail-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTypeDetail() {
+  document.getElementById('type-detail-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// ==================== TOAST ====================
+
+function showToast(msg) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.getElementById('toast-container').appendChild(toast);
+  setTimeout(() => toast.remove(), 2200);
+}
+
+// ==================== PARTICLES ====================
+
+function initParticles() {
+  const canvas = document.getElementById('bg-particles');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animId;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', () => {
+    resize();
+    initParticlesArray();
+  });
+
+  function initParticlesArray() {
+    const count = Math.min(60, Math.floor((canvas.width * canvas.height) / 15000));
+    particles = [];
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.5 + 0.5,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        alpha: Math.random() * 0.5 + 0.2,
+        hue: Math.random() > 0.5 ? 270 : 330
+      });
+    }
+  }
+  initParticlesArray();
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${p.hue}, 70%, 65%, ${p.alpha})`;
+      ctx.fill();
+    });
+
+    // Draw connections
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(139,92,246,${0.06 * (1 - dist / 120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    animId = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ==================== INIT ====================
+
+document.addEventListener('DOMContentLoaded', () => {
+  showPage('start');
+  renderTypeGrid('type-grid-start');
+  initParticles();
+});
+</script>
+</body>
+</html>
